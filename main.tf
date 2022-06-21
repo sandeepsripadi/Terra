@@ -7,8 +7,8 @@ provider "aws" {
 resource "aws_instance" "websrvr" {
   ami             = "ami-0f2e255ec956ade7f"
   instance_type   = "t2.micro"
-  subnet_id       = aws_subnet.new_public.id
-  security_groups = [aws_security_group.public_security_group.id]
+ # subnet_id       = aws_subnet.new_public.id
+ $ security_groups = [aws_security_group.public_security_group.id]
   key_name = "mynewkey"
   tags = {
     Name = "New webserver"
