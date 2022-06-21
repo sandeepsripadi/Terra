@@ -1,24 +1,31 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 3.27"
-    }
-  }
-
-  required_version = ">= 0.14.9"
-}
-
 provider "aws" {
-  profile = "default"
-  region  = "us-west-2"
+ 
+  region     = "ap-south-1"
+
 }
 
-resource "aws_instance" "app_server" {
-  ami           = "ami-830c94e3"
-  instance_type = "t2.micro"
-
+resource "aws_instance" "websrvr" {
+  ami             = "ami-0f2e255ec956ade7f"
+  instance_type   = "t2.micro"
+  subnet_id       = aws_subnet.new_public.id
+  security_groups = [aws_security_group.public_security_group.id]
+  key_name = "mynewkey"
   tags = {
-    Name = "ExampleAppServerInstance"
+    Name = "New webserver"
   }
+  user_data = <<-EOF
+                #! /bin/bash
+                sudo apt-get update
+                sudo apt-get install -y apache2
+                sudo systemctl start apache2
+                sudo systemctl enable apache2
+                echo "Welcome to your New web sever sandeep" | sudo tee /var/www/html/index.html
+                EOF
+}
+
+output "PublicIp" {
+  value=aws_instance.websrvr.public_ip
+}
+output "PublicDNS" {
+  value=aws_instance.websrvr.public_dns
 }
